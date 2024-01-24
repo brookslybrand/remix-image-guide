@@ -1,5 +1,4 @@
 import type { MetaFunction } from "@remix-run/node";
-import { isRouteErrorResponse } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -42,11 +41,10 @@ const images = [
 ];
 
 export default function Index() {
-  isRouteErrorResponse;
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
+    <div>
       <h1>Some beautiful images</h1>
-      <div style={{ gap: "1rem", display: "flex", flexWrap: "wrap" }}>
+      <div className="gap-4 flex flex-wrap">
         {images.map((image) => (
           <img
             key={image.src}
