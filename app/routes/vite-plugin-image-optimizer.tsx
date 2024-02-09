@@ -1,7 +1,7 @@
 const images = import.meta.glob("../assets/images/*.(png|jpg|jpeg)", {
-  as: "url",
+  query: "?url",
   eager: true,
-});
+}) as Record<string, string>;
 
 export default function VitePluginImageOptimizer() {
   return (

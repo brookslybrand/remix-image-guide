@@ -5,7 +5,6 @@ import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 
 export default defineConfig({
   plugins: [
-    remix(),
     tsconfigPaths(),
     ViteImageOptimizer({
       includePublic: true,
@@ -20,5 +19,6 @@ export default defineConfig({
         quality: 80,
       },
     }),
+    remix(),
   ],
 });
