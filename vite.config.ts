@@ -7,19 +7,13 @@ import { imagetools } from "vite-imagetools";
 export default defineConfig({
   plugins: [
     tsconfigPaths(),
-    // ViteImageOptimizer({
-    //   includePublic: true,
-    //   logStats: true,
-    //   cache: true,
-    //   cacheLocation: "node_modules/.cache",
-
-    //   png: {
-    //     quality: 80,
-    //   },
-    //   jpg: {
-    //     quality: 80,
-    //   },
-    // }),
+    ViteImageOptimizer({
+      logStats: true,
+      test: /big_ear_for_image_optimizer\.*/,
+      jpg: {
+        quality: 80,
+      },
+    }),
     imagetools(),
     remix(),
   ],

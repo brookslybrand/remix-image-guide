@@ -4,8 +4,6 @@ import smallImgSrc from "./sleepy_girl_small.webp";
 import mediumImgSrc from "./sleepy_girl_medium.webp";
 import largeImgSrc from "./sleepy_girl_large.webp";
 
-// You can create the images using a tool like ffmpeg
-//
 export default function Basic() {
   return (
     <div>
