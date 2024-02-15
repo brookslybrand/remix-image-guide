@@ -1,6 +1,13 @@
-import type { MetaFunction } from "@remix-run/node";
+import { json, type MetaFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { Link } from "react-router-dom";
 import { images } from "~/images";
+import { getGuides } from "~/lib/guides.server";
+
+export async function loader() {
+  const guides = await getGuides();
+  return json({ guides });
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,25 +20,20 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const { guides } = useLoaderData<typeof loader>();
   return (
     <div className="p-4">
       <h1 className="text-3xl">
         Checkout these various image loading strategies
       </h1>
       <ul className="mt-4">
-        {[
-          "basic",
-          "vite-plugin-image-optimizer",
-          "vite-imagetools",
-          "sharp",
-          "unpic",
-        ].map((route) => (
-          <li key={route}>
+        {guides.map((guide) => (
+          <li key={guide.slug}>
             <Link
               className="text-blue-600 text-xl hover:underline"
-              to={`/${route}`}
+              to={guide.slug}
             >
-              {route}
+              {guide.frontmatter.title}
             </Link>
           </li>
         ))}
