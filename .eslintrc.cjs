@@ -80,4 +80,8 @@ module.exports = {
       },
     },
   ],
+
+  rules: {
+    "import/no-duplicates": ["error", { considerQueryString: true }],
+  },
 };

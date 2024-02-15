@@ -25,3 +25,9 @@ This is a WIP repo. Here are some things I'm going to try
 ## vite-imagetools
 
 Dang, [vite-imagetools](https://github.com/JonasKruckenberg/imagetools/tree/main/packages/vite) seems cool too 🤔
+
+## More stuff to look into
+
+I can't cover it all, and there's tons of great tools! Here's a link of more stuff if this wasn't enough for you
+
+- https://unlazy.byjohann.dev/guide/usage.html
