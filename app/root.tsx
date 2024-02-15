@@ -8,6 +8,10 @@ import {
 
 import "~/tailwind.css";
 
+function Layout({ children }: { children: React.ReactNode }) {
+  return <div className="prose mx-auto py-10">{children}</div>;
+}
+
 export default function App() {
   return (
     <html lang="en">
@@ -18,7 +22,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Layout>
+          <Outlet />
+        </Layout>
         <ScrollRestoration />
         <Scripts />
       </body>
