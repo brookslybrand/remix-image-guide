@@ -12,14 +12,8 @@ export function metaFromFrontmatter(
 
     const { siteUrl } = rootData.data as ReturnType<typeof rootLoader>;
 
-    // const ogImageUrl = new URL(`${siteUrl}${image}`);
     const url = `${siteUrl}${location.pathname}`;
 
-    console.log({ url, siteUrl });
-
-    location.pathname;
-
-    console.log(matches.find(({ id }) => id === "root"));
     return [
       { title: title + " | Remix" },
       { name: "description", content: description },
