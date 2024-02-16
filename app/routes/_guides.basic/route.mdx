@@ -45,7 +45,7 @@ Here we have a simple example example using `srcset` and `sizes`, as well as a b
   />
 </div>
 
-## Generating the Images
+## Generating the images
 
 I used [ffmepg][ffmpeg] to generate the various versions of the image
 
@@ -72,5 +72,55 @@ These are the files I ended up with:
 └── sleepy_girl_placeholder.webp
 ```
 
+## The placeholder
+
+The placeholder is actually rendered using the `background` css property. The nice thing about this is once the image is loaded, the placeholder is covered by the actual image. This is a nice way to provide a good user experience if the image is still loading.
+
+It's important to provide the proper width and an [aspect ratio][aspect-ratio] to avoid cumulative layout shift (CLS).
+
+```jsx
+<div
+  className="max-w-[800px] aspect-[3/4]"
+  style={{
+    background: `top / contain no-repeat url(${placeholderImgSrc})`,
+  }}
+>
+  <img />
+</div>
+```
+
+Additionally, to make sure the placeholder image loads as quickly as possible, I added it to the `links` export for the route
+
+```js
+export function links() {
+  return [
+    {
+      rel: "preload",
+      href: placeholderImgSrc,
+      as: "image",
+    },
+  ];
+}
+```
+
+## srcset and sizes
+
+The `srcset` attribute tells the browser which image to load based on the device's pixel density and the size of the image. The `sizes` attribute tells the browser how large the image will be displayed on the page.
+
+I honestly still don't totally get these attributes, so when doing it manually I just mess around with each value until I'm happy with the loading strategy. We'll see later in other strategies, it's very common to have these values programatically created for you, which is what I would recommend doing for most cases.
+
+```jsx
+<img
+  className="w-full"
+  alt="A puppy sleeping on it's back with it's mouth slightly open"
+  src={fallbackImgSrc}
+  sizes="(min-width: 400px) 800px, 100vw"
+  srcSet={`${smallImgSrc} 400w, ${mediumImgSrc} 640w, ${largeImgSrc} 800w`}
+/>
+```
+
 [ffmpeg]: https://ffmpeg.org/
 [webp]: https://developers.google.com/speed/webp
+[aspect-ratio]: https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio
+[sizes]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#sizes
+[srcset]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#srcset
