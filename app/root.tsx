@@ -15,7 +15,10 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 export function loader({ request }: LoaderFunctionArgs) {
   const requestUrl = new URL(request.url);
-  const siteUrl = requestUrl.protocol + "//" + requestUrl.host;
+  const siteUrl =
+    (process.env.NODE_ENV === "production" ? "https:" : "http:") +
+    "//" +
+    requestUrl.host;
 
   return { siteUrl };
 }

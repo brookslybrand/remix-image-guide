@@ -12,8 +12,8 @@ export function metaFromFrontmatter(
 
     const { siteUrl } = rootData.data as ReturnType<typeof rootLoader>;
 
-    const socialImageUrl = `${siteUrl}${location.pathname}`;
-    const url = `${siteUrl}${image}`;
+    const socialImageUrl = `${siteUrl}${image}`;
+    const url = `${siteUrl}${location.pathname}`;
 
     return [
       { title: title },
@@ -23,8 +23,8 @@ export function metaFromFrontmatter(
       { property: "og:image", content: socialImageUrl },
       { property: "og:description", content: description },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:creator", content: "@brookslybrand" },
-      { name: "twitter:site", content: "@brookslybrand" },
+      { name: "twitter:creator:id", content: "@brookslybrand" },
+      { name: "twitter:site:id", content: "@brookslybrand" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
       { name: "twitter:image", content: socialImageUrl },
