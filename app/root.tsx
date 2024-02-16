@@ -1,3 +1,4 @@
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -10,6 +11,13 @@ import "~/tailwind.css";
 
 function Layout({ children }: { children: React.ReactNode }) {
   return <div className="prose mx-auto py-10">{children}</div>;
+}
+
+export function loader({ request }: LoaderFunctionArgs) {
+  const requestUrl = new URL(request.url);
+  const siteUrl = requestUrl.protocol + "//" + requestUrl.host;
+
+  return { siteUrl };
 }
 
 export default function App() {

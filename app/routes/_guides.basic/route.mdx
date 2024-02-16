@@ -1,8 +1,12 @@
 ---
 title: "Basic Example"
 description: "A simple example using srcset and sizes"
+image: /basic-social.jpg
+imageAlt: "A puppy sleeping on it's back with it's mouth slightly open"
 order: 1
 ---
+
+import { metaFromFrontmatter } from "~/lib/meta-from-frontmatter";
 
 import placeholderImgSrc from "./sleepy_girl_placeholder.webp";
 import fallbackImgSrc from "./sleepy_girl.webp";
@@ -10,30 +14,63 @@ import smallImgSrc from "./sleepy_girl_small.webp";
 import mediumImgSrc from "./sleepy_girl_medium.webp";
 import largeImgSrc from "./sleepy_girl_large.webp";
 
-export default function Basic() {
-  return (
-    <div>
-      <p>
-        Here we have a simple example example using srcset and sizes. I used
-        ffmepg to generate the various versions of the image
-      </p>
-      <pre>
-        <code>ffmpeg -i input.jpg -vf scale=200:-1 -q:v 80 output.webp</code>
-      </pre>
-      <div
-        className="max-w-[800px] aspect-[3/4]"
-        style={{
-          background: `top / contain no-repeat url(${placeholderImgSrc})`,
-        }}
-      >
-        <img
-          className="w-full"
-          alt="A puppy sleeping on it's back with it's mouth slightly open"
-          src={fallbackImgSrc}
-          sizes="(min-width: 400px) 800px, 100vw"
-          srcSet={`${smallImgSrc} 400w, ${mediumImgSrc} 640w, ${largeImgSrc} 800w`}
-        />
-      </div>
-    </div>
-  );
+export const meta = metaFromFrontmatter(frontmatter);
+
+export function links() {
+  return [
+    {
+      rel: "preload",
+      href: placeholderImgSrc,
+      as: "image",
+    },
+  ];
 }
+
+# Basic Image example
+
+Here we have a simple example example using `srcset` and `sizes`, as well as a blurred placeholder image set using the css `background` property.
+
+<div
+  className="max-w-[800px] aspect-[3/4]"
+  style={{
+    background: `top / contain no-repeat url(${placeholderImgSrc})`,
+  }}
+>
+  <img
+    className="w-full"
+    alt="A puppy sleeping on it's back with it's mouth slightly open"
+    src={fallbackImgSrc}
+    sizes="(min-width: 400px) 800px, 100vw"
+    srcSet={`${smallImgSrc} 400w, ${mediumImgSrc} 640w, ${largeImgSrc} 800w`}
+  />
+</div>
+
+## Generating the Images
+
+I used [ffmepg][ffmpeg] to generate the various versions of the image
+
+```sh
+$ ffmpeg -i ./sleepy_girl.jpg -vf scale=200:-1 -q:v 80 ./sleepy_girl.webp
+```
+
+To create these images I took an old photo of my sweet puppy sleeping and converted it to [webp]. I also scaled the image to 400px, 640px, and 800px. Additionally, I set the quality (`-q:v`) to 80 (out of 100) to make the images a little smaller.
+
+I also created a small, placeholder image with blur effect using the following command:
+
+```sh
+$ ffmpeg -i ./sleepy_girl.jpg -vf "scale=iw/10:-1,boxblur=5:1" ./sleepy_girl_placeholder.webp
+```
+
+These are the files I ended up with:
+
+```
+├── sleepy_girl.jpg
+├── sleepy_girl.webp
+├── sleepy_girl_small.webp
+├── sleepy_girl_medium.webp
+├── sleepy_girl_large.webp
+└── sleepy_girl_placeholder.webp
+```
+
+[ffmpeg]: https://ffmpeg.org/
+[webp]: https://developers.google.com/speed/webp

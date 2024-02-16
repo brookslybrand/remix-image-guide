@@ -3,7 +3,7 @@ import typography from "@tailwindcss/typography";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./app/**/*.{ts,tsx}"],
+  content: ["./app/**/*.{ts,tsx,md,mdx}"],
   theme: {
     extend: {},
   },
