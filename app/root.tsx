@@ -10,7 +10,7 @@ import {
 import "~/tailwind.css";
 
 function Layout({ children }: { children: React.ReactNode }) {
-  return <div className="prose mx-auto py-10">{children}</div>;
+  return <div className="prose mx-auto py-10 px-10 md:px-0">{children}</div>;
 }
 
 export function loader({ request }: LoaderFunctionArgs) {
