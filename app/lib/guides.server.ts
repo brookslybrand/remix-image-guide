@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 export type Frontmatter = {
   title: string;
   description: string;
@@ -15,7 +16,7 @@ export async function getGuides(): Promise<PostMeta[]> {
     { eager: true }
   );
 
-  // eslint-disable-next-line import/no-unresolved
+  // @ts-expect-error - this is a dynamic import
   const build = await import("virtual:remix/server-build");
 
   const guides = Object.entries(modules).map(([file, guide]) => {

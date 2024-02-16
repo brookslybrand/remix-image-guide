@@ -1,5 +1,5 @@
 {
-  "name": "remix-image-strategies",
+  "name": "remix-image-guide",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.2",
     "@mdx-js/rollup": "^3.0.1",
     "@remix-run/dev": "^2.6.0",
     "@tailwindcss/typography": "^0.5.10",
