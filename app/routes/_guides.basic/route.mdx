@@ -11,6 +11,8 @@ import fallbackImgSrc from "./sleepy_girl.webp";
 import smallImgSrc from "./sleepy_girl_small.webp";
 import mediumImgSrc from "./sleepy_girl_medium.webp";
 import largeImgSrc from "./sleepy_girl_large.webp";
+import preloadingImgSrc from "./screenshots/preloading.webp";
+import demoSrc from "./screenshots/demo.mp4";
 
 export function links() {
   return [
@@ -22,9 +24,11 @@ export function links() {
   ];
 }
 
-# Basic Image example
+# Basic Image Handling in Remix
 
-Here we have a simple example example using `srcset` and `sizes`, as well as a blurred placeholder image set using the css `background` property.
+This is the simplest approach to optimized image loading in Remix. In fact, it barely even uses anything from Remix. It's just good ol' [HTML `img` component][img-mdn] using `srcset` and `sizes` attributes, along with a blurred placeholder image set using the CSS `background` property. The only Remix-y thing we do is exporting a `links` function to preload the placeholder image.
+
+Here's is the result:
 
 <div
   className="max-w-[800px] aspect-[3/4]"
@@ -41,23 +45,77 @@ Here we have a simple example example using `srcset` and `sizes`, as well as a b
   />
 </div>
 
-## Generating the images
+And here's what the full code would look like:
 
-I used [ffmepg][ffmpeg] to generate the various versions of the image
+```tsx
+import placeholderImgSrc from "./sleepy_girl_placeholder.webp";
+import fallbackImgSrc from "./sleepy_girl.webp";
+import smallImgSrc from "./sleepy_girl_small.webp";
+import mediumImgSrc from "./sleepy_girl_medium.webp";
+import largeImgSrc from "./sleepy_girl_large.webp";
+
+export function links() {
+  return [
+    {
+      rel: "preload",
+      href: placeholderImgSrc,
+      as: "image",
+    },
+  ];
+}
+
+export default function Image() {
+  return (
+    <div
+      className="max-w-[800px] aspect-[3/4]"
+      style={{
+        background: `top / contain no-repeat url(${placeholderImgSrc})`,
+      }}
+    >
+      <img
+        className="w-full"
+        alt="A puppy sleeping on it's back with it's mouth slightly open"
+        src={fallbackImgSrc}
+        sizes="(min-width: 400px) 800px, 100vw"
+        srcSet={`${smallImgSrc} 400w, ${mediumImgSrc} 640w, ${largeImgSrc} 800w`}
+      />
+    </div>
+  );
+}
+```
+
+And here is the a video of the image loading:
+
+<video className="w-full" controls src={demoSrc} />
+
+## Image Files
+
+When delivering images on the web, it's important to provide different sizes and formats to ensure the best performance across various devices and network conditions. In this example, we use the [WebP format][webp] for the images, which provides better compression and quality than JPEG and PNG.
+
+You also need multiple images of different sizes to serve the most suitable image based on the viewport size and device pixel ratio.
+
+Providing on-demand optimized images of various formats and sizes is what an [Image CDN][image-cdn] does for you. Since this is just a basic example, we're providing these images manually. This is what we've got:
+
+- `sleepy_girl.jpg`: The original image in JPEG format.
+- `sleepy_girl_placeholder.webp`: A small, blurred version of the image that serves as a placeholder while the actual image loads.
+- `sleepy_girl.webp`: The fallback image that will be loaded if the browser doesn't support `srcset`.
+- `sleepy_girl_small.webp`, `sleepy_girl_medium.webp`, `sleepy_girl_large.webp`: Different sizes of the image to be loaded based on the viewport size and device pixel ratio.
+
+## Generating the Images
+
+We use [ffmpeg][ffmpeg] to generate these images from an original photo. The command below scales the image to a specific width (in pixels) and sets the image quality (`-q:v`) to 80 (out of 100) to reduce the file size:
 
 ```sh
 $ ffmpeg -i ./sleepy_girl.jpg -vf scale=200:-1 -q:v 80 ./sleepy_girl.webp
 ```
 
-To create these images I took an old photo of my sweet puppy sleeping and converted it to [webp]. I also scaled the image to 400px, 640px, and 800px. Additionally, I set the quality (`-q:v`) to 80 (out of 100) to make the images a little smaller.
-
-I also created a small, placeholder image with blur effect using the following command:
+The placeholder image is created by scaling down the original image and applying a box blur effect:
 
 ```sh
 $ ffmpeg -i ./sleepy_girl.jpg -vf "scale=iw/10:-1,boxblur=5:1" ./sleepy_girl_placeholder.webp
 ```
 
-These are the files I ended up with:
+The resulting file structure looks like this:
 
 ```
 ├── sleepy_girl.jpg
@@ -68,11 +126,9 @@ These are the files I ended up with:
 └── sleepy_girl_placeholder.webp
 ```
 
-## The placeholder
+## The Placeholder
 
-The placeholder is actually rendered using the `background` css property. The nice thing about this is once the image is loaded, the placeholder is covered by the actual image. This is a nice way to provide a good user experience if the image is still loading.
-
-It's important to provide the proper width and an [aspect ratio][aspect-ratio] to avoid cumulative layout shift (CLS).
+We render the placeholder image using the CSS `background` property. This approach provides a smooth user experience as the placeholder is instantly replaced by the actual image once it's loaded. To avoid cumulative layout shift (CLS), it's crucial to provide the proper width and an [aspect ratio][aspect-ratio]:
 
 ```jsx
 <div
@@ -85,7 +141,16 @@ It's important to provide the proper width and an [aspect ratio][aspect-ratio] t
 </div>
 ```
 
-Additionally, to make sure the placeholder image loads as quickly as possible, I added it to the `links` export for the route
+<div
+  className="max-w-[800px] aspect-[3/4]"
+  style={{
+    background: `top / contain no-repeat url(${placeholderImgSrc})`,
+  }}
+/>
+
+## Preloading the Placeholder
+
+To ensure the placeholder image loads as quickly as possible, we preload it using the [`links` export for the route][remix-links-export]:
 
 ```js
 export function links() {
@@ -99,11 +164,17 @@ export function links() {
 }
 ```
 
-## srcset and sizes
+This guaruntees that this image will start loading first
 
-The `srcset` attribute tells the browser which image to load based on the device's pixel density and the size of the image. The `sizes` attribute tells the browser how large the image will be displayed on the page.
+<img
+  className="w-full"
+  alt="A network waterfall showing sleepy_girl_placeholder.webp loading before sleepy_girl_large.webp"
+  src={preloadingImgSrc}
+/>
 
-I honestly still don't totally get these attributes, so when doing it manually I just mess around with each value until I'm happy with the loading strategy. We'll see later in other strategies, it's very common to have these values programatically created for you, which is what I would recommend doing for most cases.
+## The `srcset` and `sizes` Attributes
+
+The [`srcset`][srcset-mdn] attribute allows the browser to choose the most suitable image source based on the viewport size and device pixel ratio. The [`sizes`][sizes-mdn] attribute informs the browser about the displayed size of the image. While it's possible to manually set these values, it's recommended to have them programmatically created for a more efficient loading strategy:
 
 ```jsx
 <img
@@ -115,8 +186,17 @@ I honestly still don't totally get these attributes, so when doing it manually I
 />
 ```
 
+This is what causes the browser to load the most suitable image based on the viewport size and device pixel ratio, as seen in the demo video above.
+
+## Conclusion
+
+This guide provides a basic understanding of how to handle images in Remix using `srcset` and `sizes` attributes, along with a blurred placeholder image. For a deeper understanding of these concepts, consider exploring the [MDN Web Docs for the img attribute][img-mdn].
+
+[img-mdn]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
+[image-cdn]: https://web.dev/articles/image-cdns
 [ffmpeg]: https://ffmpeg.org/
 [webp]: https://developers.google.com/speed/webp
 [aspect-ratio]: https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio
-[sizes]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#sizes
-[srcset]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#srcset
+[remix-links-export]: https://remix.run/docs/en/main/route/links
+[srcset-mdn]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#srcset
+[sizes-mdn]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#sizes
