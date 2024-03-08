@@ -9,20 +9,10 @@ export const frontmatterSchema = z.object({
   order: z.number().optional(),
 });
 
-export async function getGuideFrontmatter(pathname: string) {
+export async function getGuideFrontmatter(routeId: string) {
   const build = await import("virtual:remix/server-build");
-  const routeId = "routes/_guides.basic";
 
-  type RouteMap = Record<string, (typeof build)["routes"][string]>;
-
-  // Create a path to route mapping
-  const routeMap = Object.fromEntries(
-    Object.entries(build.routes).map(([, route]) => [route.path, route])
-  ) as RouteMap;
-
-  // replace any starting slashes
-  pathname = pathname.replace(/^\//, "");
-  const module = routeMap[pathname]?.module;
+  const module = build.routes[routeId]?.module;
 
   assert.ok(module, "No route found for " + routeId);
   assert.ok("frontmatter" in module, "No frontmatter found for " + routeId);
@@ -31,9 +21,12 @@ export async function getGuideFrontmatter(pathname: string) {
 }
 
 export async function getGuides() {
-  const modules = import.meta.glob("../routes/_guides.**(/route).mdx", {
+  const modules = import.meta.glob("../routes/**(/route).mdx", {
     eager: true,
   });
+
+  // TODO: Fix this hack and actually ignore the _index route with regex like a real programmer
+  delete modules["../routes/_index/route.mdx"];
 
   const build = await import("virtual:remix/server-build");
 
