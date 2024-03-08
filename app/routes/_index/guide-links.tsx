@@ -1,11 +1,5 @@
-import { getGuides } from "~/lib/guides.server";
 import { Link, useLoaderData } from "@remix-run/react";
-
-export async function loader() {
-  const guides = await getGuides();
-
-  return { guides };
-}
+import type { loader } from "./loader";
 
 export function GuideLinks() {
   const { guides } = useLoaderData<typeof loader>();
