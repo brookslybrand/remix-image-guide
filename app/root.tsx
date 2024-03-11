@@ -9,16 +9,14 @@ import {
 } from "@remix-run/react";
 
 import "~/tailwind.css";
-import { getGuideFrontmatter } from "~/lib/guides.server";
+import { getRouteFrontmatter } from "~/lib/guides.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { pathname, host } = new URL(request.url);
   const siteUrl =
     (process.env.NODE_ENV === "production" ? "https:" : "http:") + "//" + host;
 
-  const routeId = `routes${pathname === "/" ? "/_index" : pathname}`;
-
-  const frontmatter = await getGuideFrontmatter(routeId);
+  const frontmatter = await getRouteFrontmatter(pathname.replace(/^\//, ""));
 
   return { siteUrl, frontmatter };
 }
@@ -26,6 +24,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ location, data }) => {
   if (!data) return [];
   const { siteUrl, frontmatter } = data;
+
+  if (!frontmatter) return [];
 
   const { title, description, image, imageAlt } = frontmatter;
 

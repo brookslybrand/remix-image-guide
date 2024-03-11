@@ -9,19 +9,27 @@ export const frontmatterSchema = z.object({
   order: z.number().optional(),
 });
 
-export async function getGuideFrontmatter(routeId: string) {
+export async function getRouteFrontmatter(pathname: string) {
   const build = await import("virtual:remix/server-build");
 
-  const module = build.routes[routeId]?.module;
+  // remove the root, since it messes with the lookup and shouldn't be written in mdx anyway
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { root, ...routes } = build.routes;
 
-  assert.ok(module, "No route found for " + routeId);
-  assert.ok("frontmatter" in module, "No frontmatter found for " + routeId);
+  const module = Object.values(routes).find(
+    // _index is undefine , so transform it to ""
+    (route) => pathname === (route.path ?? "")
+  )?.module;
+
+  if (!module || !("frontmatter" in module)) {
+    return null;
+  }
 
   return frontmatterSchema.parse(module.frontmatter);
 }
 
 export async function getGuides() {
-  const modules = import.meta.glob("../routes/**(/route).mdx", {
+  const modules = import.meta.glob("../routes/_guides.**(/route).mdx", {
     eager: true,
   });
 
