@@ -1,31 +1,68 @@
 ---
 title: "vite-plugin-image-optimizer"
 description: "A simple example of using vite-plugin-image-optimizer to optimize images at build time."
+image: /social/basic.jpg
+imageAlt: "A puppy sleeping on it's back with it's mouth slightly open"
 order: 2
 ---
 
 import imgSrc from "./big_ear_for_image_optimizer.jpg";
 
+Note: only runs during the production build.
 
+Maybe ask Pedro: we seem to do a double run of Vite, which means this plugin runs multiple times -- probably only circumvented via caching
 
-<div>
-  <p>
-    vite-image-optimizer is nice for passing over all images and optimizing
-    them at build. It's useful for small projects and simple blogs, as well
-    as dealing with SVGs.
-  </p>
-  <p>
-    Some downsides is that it doesn't convert from one format to another,
-    and it applies the same optimization to all images. If you're wanting to
-    use srcset and sizes to ship different images to different devices,
-    you'll need to use a different tool.
-  </p>
-  <div className="max-w-[800px] aspect-[3/4]">
-    <img
-      className="w-full"
-      alt="Cute dog with one big ear up and one flopped down"
-      src={imgSrc}
-    />
-  </div>
+APIs to discuss:
+
+- jpg/png objects -- talk about how these Sharp options
+- cache/cacheLocation
+- logStats?
+- includePublic/test/include/exclude -- can't search directories, only file names
+
+vite-image-optimizer is nice for passing over all images and optimizing them
+at build. It's useful for small projects and simple blogs, as well as
+dealing with SVGs.
+
+Some downsides is that it doesn't convert from one format to another, and it
+applies the same optimization to all images. If you're wanting to use srcset
+and sizes to ship different images to different devices, you'll need to use
+a different tool.
+
+TODO: explain some basic image css tricks
+
+<div className="max-w-[800px] aspect-[3/4] bg-gray-200">
+  <img
+    className="w-full"
+    alt="Cute dog with one big ear up and one flopped down"
+    src={imgSrc}
+  />
 </div>
 
+Some more text
+
+Screen shots to capture:
+
+- logStats in terminal
+- dev vs prod image size
+- maybe lower the quality a ton and show the difference?
+
+```ts
+import { vitePlugin as remix } from "@remix-run/dev";
+import { defineConfig } from "vite";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+
+export default defineConfig({
+  plugins: [
+    ViteImageOptimizer({
+      logStats: true,
+      test: /big_ear_for_image_optimizer\.*/,
+      jpg: {
+        quality: 80,
+      },
+      cache: true,
+      cacheLocation: "node_modules/.cache",
+    }),
+    remix(),
+  ],
+});
+```

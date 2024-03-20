@@ -18,6 +18,8 @@ export default defineConfig({
       jpg: {
         quality: 80,
       },
+      cache: true,
+      cacheLocation: "node_modules/.cache",
     }),
     imagetools(),
     mdx({
